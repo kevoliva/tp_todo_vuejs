@@ -1,6 +1,8 @@
 <template>
   <div class="todo">
-    <h1>Il y a {{todos.length }} todo !</h1>
+    <h1>Il y a {{todos.length }} todo,</h1>
+    <h2>Dont {{ todos.filter((todo) => todo.isSelected == true).length }}
+        actuellement sélectionné(s) !</h2>
     <img class="logo-todo" alt="Vue logo" src="../assets/todo_logo.png">
     <h4 v-if="isInvalid">Veuillez renseigner tous les champs, en respectant les validations !</h4>
     <div class="row mt-6 add-user">
@@ -170,6 +172,7 @@ export default {
         margin-left: auto;
         margin-right: auto;
         padding: 20px 6px;
+        cursor: pointer;
     }
 
     .item-selected {
