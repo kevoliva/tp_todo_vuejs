@@ -1,8 +1,8 @@
 <template>
   <div class="todo">
-    <TodoComponent msg="Hello Todo !"/>
+    <h1>Il y a {{todos.length }} todo !</h1>
     <img class="logo-todo" alt="Vue logo" src="../assets/todo_logo.png">
-    <h4 v-if="isInvalid">Veuillez renseigner tous les champs !</h4>
+    <h4 v-if="isInvalid">Veuillez renseigner tous les champs, en respectant les validations !</h4>
     <div class="row mt-6 add-user">
         <form @submit.prevent="addTodo()">
             <label for="inputName">
@@ -26,10 +26,12 @@
         </form>
     </div>
     <div class="row mt-6 list">
-        <div class="one-line-todo mt-3" v-for="(todo, index) in todos" v-bind:key="index">
+        <div @click="select(index)" @keyPress="select(index)" class="one-line-todo mt-3"
+        v-for="(todo, index) in todos" v-bind:key="index" :class="todos[index].bg">
             <div class="element name">{{ todo.name }}</div>
             <div class="element hour">{{ todo.hour }}</div>
             <div class="element user">{{ todo.user }}</div>
+            <div class="element status">{{ todo.status }}</div>
             <div>
                 <button type="button" class="btn-action btn-edit">
                     <font-awesome-icon icon="fa-solid fa-pen" />
@@ -42,18 +44,21 @@
         <button v-if="todos.length > 0" @click="todos=[]" class="btn-delete-all mt-3" type="button">
             Supprimer toutes les tâches
         </button>
+        <button @click="deleteSelected()" class="btn-delete-all mt-3" type="button">
+            Supprimer les éléments sélectionnés
+        </button>
     </div>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import TodoComponent from '@/components/TodoComponent.vue';
+// import TodoComponent from '@/components/TodoComponent.vue';
 
 export default {
   name: 'TodoView',
   components: {
-    TodoComponent,
+    // TodoComponent,
   },
   data() {
     return {
@@ -61,6 +66,9 @@ export default {
       name: '',
       hour: '',
       user: '',
+      status: '',
+      bg: '',
+      isSelected: false,
       isInvalid: false,
     };
   },
@@ -71,16 +79,34 @@ export default {
           name: this.name,
           hour: this.hour,
           user: this.user,
+          status: '🔴 A venir',
+          bg: '',
         });
+        this.name = '';
+        this.hour = '';
+        this.user = '';
+        this.bg = '';
       }
     },
     checkInputs() {
-      if (this.name === '' || this.hour === '' || this.user === '') {
+      if (this.name === '' || this.hour === '' || this.user === '' || this.hour <= 0) {
         this.isInvalid = true;
         return false;
       }
       this.isInvalid = false;
       return true;
+    },
+    select(index) {
+      if (this.todos[index].isSelected) {
+        this.todos[index].isSelected = false;
+        this.todos[index].bg = '';
+      } else {
+        this.todos[index].isSelected = true;
+        this.todos[index].bg = 'item-selected';
+      }
+    },
+    deleteSelected() {
+      this.todos = this.todos.filter((todo) => todo.isSelected !== true);
     },
   },
 };
@@ -88,8 +114,8 @@ export default {
 
 <style scoped>
     .logo-todo {
-        width: 200px;
-        height: 200px;
+        width: 120px;
+        height: 120px;
     }
 
     .row {
@@ -146,8 +172,12 @@ export default {
         padding: 20px 6px;
     }
 
+    .item-selected {
+        background: #bdc3c7;
+    }
+
     .element {
-        width: 25%;
+        width: 20%;
         text-align: center;
         font-size: 18px;
         font-weight: 700;
@@ -187,6 +217,9 @@ export default {
     }
 
     .btn-delete-all {
+        display: block;
+        margin-right: auto;
+        margin-left: auto;
         border: none;
         border-radius: 20px;
         padding: 12px 24px;
