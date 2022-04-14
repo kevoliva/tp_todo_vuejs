@@ -28,9 +28,10 @@
         </form>
     </div>
     <div class="row mt-6 list">
-        <div @click="select(index)" @keyPress="select(index)" class="one-line-todo mt-3"
+        <div class="one-line-todo mt-3"
         v-for="(todo, index) in todos" v-bind:key="index" :class="todos[index].bg">
-            <div class="element name">{{ todo.name }}</div>
+            <div class="element name"
+            @click="select(index)" @keyPress="select(index)">{{ todo.name }}</div>
             <div class="element hour">{{ todo.hour }}</div>
             <div class="element user">{{ todo.user }}</div>
             <div class="element status">{{ todo.status }}</div>
@@ -46,7 +47,8 @@
         <button v-if="todos.length > 0" @click="todos=[]" class="btn-delete-all mt-3" type="button">
             Supprimer toutes les tâches
         </button>
-        <button @click="deleteSelected()" class="btn-delete-all mt-3" type="button">
+        <button v-if="todos.filter((todo) => todo.isSelected == true).length > 0"
+            @click="deleteSelected()" class="btn-delete-all mt-3" type="button">
             Supprimer les éléments sélectionnés
         </button>
     </div>
@@ -172,6 +174,9 @@ export default {
         margin-left: auto;
         margin-right: auto;
         padding: 20px 6px;
+    }
+
+    .name {
         cursor: pointer;
     }
 
